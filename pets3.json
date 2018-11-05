@@ -1,0 +1,26 @@
+[
+    {
+        "name": "Chano",
+        "species": "dog",
+        "foods": {
+            "likes": ["bones", "bread"],
+            "dislikes": ["dog food", "vegetables"]
+        }
+    },
+    {
+        "name": "tom",
+        "species": "cat",
+        "foods": {
+            "likes": ["mice", "cheese"],
+            "dislikes": ["dog"]
+        }
+    },
+    {
+        "name": "jerry",
+        "species": "mice",
+        "foods": {
+            "likes": ["cheese", "ham"],
+            "dislikes": ["cat", "dog"]
+        }
+    }
+]
