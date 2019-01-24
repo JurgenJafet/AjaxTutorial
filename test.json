@@ -1,0 +1,1055 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "version" : "1.0.0",
+    "title" : "Sitehands API",
+    "description" : "This documentation is going to be the main reference for clients to use the Sitehands API."
+  },
+  "servers" : [ {
+    "url" : "https://qe4-analyst.sitehands.com/rest/api/v1",
+    "description" : "Server used for testing"
+  } ],
+  "security" : [ {
+    "password" : [ "read", "write" ]
+  } ],
+  "tags" : [ {
+    "name" : "General",
+    "description" : "Http methods applicable to all objects.",
+    "externalDocs" : {
+      "description" : "Find out more",
+      "url" : "https://itinvolve.atlassian.net/wiki/spaces/CIRRUS/pages/122746019/Sitehands+REST+API+v1"
+    }
+  }, {
+    "name" : "Service Request",
+    "description" : "Information for GET, POST, PUT, or DELETE http methods related to Service Request object.",
+    "externalDocs" : {
+      "description" : "Find out more",
+      "url" : "https://itinvolve.atlassian.net/wiki/spaces/SHAUTO/pages/629276730/Service+Request"
+    }
+  }, {
+    "name" : "Site",
+    "description" : "Information for GET, POST, PUT, or DELETE http methods related to Site object.",
+    "externalDocs" : {
+      "description" : "Find out more",
+      "url" : "https://itinvolve.atlassian.net/wiki/spaces/SHAUTO/pages/631406642/Site"
+    }
+  }, {
+    "name" : "Work Order",
+    "description" : "Information for GET, POST, PUT, or DELETE http methods related to work order object.",
+    "externalDocs" : {
+      "description" : "Find out more",
+      "url" : "https://itinvolve.atlassian.net/wiki/spaces/SHAUTO/pages/640811013/Work+Order"
+    }
+  }, {
+    "name" : "IT Contact",
+    "description" : "Information for GET, POST, PUT, or DELETE http methods related to IT Contact object.",
+    "externalDocs" : {
+      "description" : "Find out more",
+      "url" : "https://itinvolve.atlassian.net/wiki/spaces/SHAUTO/pages/648609811/IT+Contact"
+    }
+  } ],
+  "paths" : {
+    "/list" : {
+      "get" : {
+        "tags" : [ "General" ],
+        "summary" : "Allows you to get all the object based on the introduced query parameters",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "objectType",
+          "description" : "Type of the object you want to get records of.",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "Service_Request", "Site", "Work_Order", "It_Contact" ]
+          }
+        }, {
+          "in" : "query",
+          "name" : "provideStats",
+          "description" : "Returns an object with relevant information instead of a simple array",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
+        }, {
+          "in" : "query",
+          "name" : "withRelatedData",
+          "description" : "When this option specified, we gather related data to the given object and return it.",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "fieldNames",
+          "description" : "Here you can add as many key/value pairs as you want. Each key must be a field Name with its respective value. Also you can declare each field name in a range with keywork IN and each possible value separated with a coma",
+          "schema" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "style" : "form",
+          "explode" : true
+        }, {
+          "in" : "query",
+          "name" : "pageSize",
+          "description" : "The quantity of records you want to be returned.",
+          "required" : false,
+          "schema" : {
+            "type" : "number",
+            "format" : "integer",
+            "default" : 100
+          }
+        }, {
+          "in" : "query",
+          "name" : "currentPage",
+          "description" : "Using the page size is used for pagination.",
+          "required" : false,
+          "schema" : {
+            "type" : "number",
+            "format" : "integer"
+          }
+        } ],
+        "description" : "Let's you get an array of all the object based on the object type and criteria",
+        "responses" : {
+          "200" : {
+            "description" : "The request is correct, see the response body, you should received a JSON that contains and array.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "oneOf" : [ {
+                      "$ref" : "#/components/schemas/Service_Request"
+                    }, {
+                      "$ref" : "#/components/schemas/Site"
+                    }, {
+                      "$ref" : "#/components/schemas/Work_Order"
+                    }, {
+                      "$ref" : "#/components/schemas/IT_Contact"
+                    } ]
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Default error code"
+          },
+          "404" : {
+            "description" : "Not found"
+          },
+          "500" : {
+            "description" : "Unexpected server error"
+          }
+        }
+      }
+    },
+    "/search" : {
+      "get" : {
+        "tags" : [ "General" ],
+        "summary" : "Allows you to get all the object based on the introduced query parameters",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "searchTerm",
+          "description" : "Search criteria",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "objectTypes",
+          "description" : "Types of objects related to this search separated a coma, empty to show default (Service request, work order and IT contact)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "quickSearch",
+          "description" : "Flag that enables the quick search, true value disables related object search",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean"
+          }
+        }, {
+          "in" : "query",
+          "name" : "maxListSize",
+          "description" : "If you want to search only certain quantity of records, if not introduced value is 10",
+          "required" : false,
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "description" : "Allows you to search in all the available records the value you introduced in search term.",
+        "responses" : {
+          "200" : {
+            "description" : "The request is correct",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "searchTerm" : {
+                      "type" : "string"
+                    },
+                    "searchData" : {
+                      "type" : "object",
+                      "properties" : {
+                        "Work_Order" : {
+                          "type" : "object",
+                          "additionalProperties" : true
+                        },
+                        "Service_Request" : {
+                          "type" : "object",
+                          "additionalProperties" : true
+                        },
+                        "IT_Contact" : {
+                          "type" : "object",
+                          "additionalProperties" : true
+                        }
+                      }
+                    },
+                    "objectTypes" : {
+                      "type" : "array",
+                      "items" : {
+                        "type" : "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Default error code (Search term is not specified)"
+          },
+          "404" : {
+            "description" : "Not found"
+          },
+          "500" : {
+            "description" : "Unexpected server error"
+          }
+        }
+      }
+    },
+    "/Service_Request" : {
+      "post" : {
+        "tags" : [ "Service Request" ],
+        "summary" : "Allows you to create a Service Request object",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "returnUpdatedObject",
+          "description" : "This flag, if the creation is successful, in the response body you will get back the created object.",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "basic" ]
+          }
+        } ],
+        "requestBody" : {
+          "description" : "Body format of the service request with CIF fields",
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "additionalProperties" : true,
+                "properties" : {
+                  "Task_Type_Record.Name" : {
+                    "type" : "string"
+                  },
+                  "Site.Name" : {
+                    "type" : "string"
+                  },
+                  "Summary" : {
+                    "type" : "string",
+                    "description" : "Brief description of what the service request is about"
+                  },
+                  "State" : {
+                    "type" : "string",
+                    "description" : "Indicates whether the service request is New, Active or has been Canceled."
+                  },
+                  "Status" : {
+                    "type" : "string",
+                    "description" : "Specifies the current condition of the service request."
+                  },
+                  "Request_Start" : {
+                    "type" : "string",
+                    "format" : "date-time",
+                    "description" : "When the Service request is needed"
+                  },
+                  "External_Id" : {
+                    "type" : "string",
+                    "description" : "Client identifier for the service request record."
+                  }
+                },
+                "required" : [ "Task_Type_Record", "Summary", "Site" ]
+              }
+            }
+          }
+        },
+        "description" : "Creates a new Service request record with the data provided in the request  body.",
+        "responses" : {
+          "200" : {
+            "description" : "The request is correct"
+          },
+          "400" : {
+            "description" : "Default error code (Invalid object type)"
+          },
+          "403" : {
+            "description" : "Current user does not have the necessary permission "
+          }
+        }
+      }
+    },
+    "/Service_Request/{name}" : {
+      "get" : {
+        "tags" : [ "Service Request" ],
+        "summary" : "Allows you to get data of Service Request Object",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "name",
+          "description" : "Service request name or unique identifier (Name, Id or External Id) ",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "formData",
+          "description" : "If you want to get all custom form information for this specific object",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ true, "schema", "multi-page-schema" ]
+          }
+        }, {
+          "in" : "query",
+          "name" : "fullData",
+          "description" : "If you want to get full information for this  specific object",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ true, "extended" ]
+          }
+        } ],
+        "description" : "This endpoint lets you get up to date information of a specific service request.",
+        "responses" : {
+          "200" : {
+            "description" : "The request is correct",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Service_Request"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Default error code (Search term is not specified)"
+          },
+          "403" : {
+            "description" : "Current user does not have permission to access the object"
+          },
+          "404" : {
+            "description" : "Not found, object cannot be found or object identifier is not unique"
+          },
+          "409" : {
+            "description" : "Error objId is not valid"
+          },
+          "500" : {
+            "description" : "Unexpected server error"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Service Request" ],
+        "summary" : "Allows you to edit a Service Request object",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "name",
+          "description" : "Service request name or unique identifier (Name, Id or External Id).",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "returnUpdatedObject",
+          "description" : "This flag, if the creation is successful, in the response body you will get back the created object.",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "basic" ]
+          }
+        }, {
+          "in" : "query",
+          "name" : "action",
+          "description" : "it runs the specified workflow action on the object after incorporating values in the request body (Delete, if you want to delete the object and send the request body empty)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "body of the service request with CIF fields",
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Service_Request"
+              }
+            }
+          }
+        },
+        "description" : "Updates a Service request record with the data provided in the request  body.",
+        "responses" : {
+          "200" : {
+            "description" : "The request is correct"
+          },
+          "400" : {
+            "description" : "Default error code (Object is not in an updatable state)"
+          },
+          "403" : {
+            "description" : "Current user does not have the necessary permission "
+          }
+        }
+      }
+    },
+    "/Site" : {
+      "post" : {
+        "tags" : [ "Site" ],
+        "summary" : "Allows you to create a Site object",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "returnUpdatedObject",
+          "description" : "This flag, if the creation is successful, in the response body you will get back the created object.",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "basic" ]
+          }
+        } ],
+        "requestBody" : {
+          "description" : "Send a request body with the information you think is necessary to really specify the Site",
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Site"
+              }
+            }
+          }
+        },
+        "description" : "Creates a new site record with the data provided in the request  body.",
+        "responses" : {
+          "200" : {
+            "description" : "The request is correct"
+          },
+          "400" : {
+            "description" : "Default error code (Invalid object type)"
+          },
+          "403" : {
+            "description" : "Current user does not have the necessary permissions"
+          }
+        }
+      }
+    },
+    "/Site/{name}" : {
+      "get" : {
+        "tags" : [ "Site" ],
+        "summary" : "Allows you to get data of Site Object",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "name",
+          "description" : "Site name or unique identifier (Name, Id or External Id) ",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "searchTerm",
+          "description" : "Search Site object based on the introduced searchTerm",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "alternateObjectAllowed",
+          "description" : "Object that it should alternate",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "formData",
+          "description" : "If you want to get all custom form information for this specific object",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ true, "schema", "multi-page-schema" ]
+          }
+        }, {
+          "in" : "query",
+          "name" : "fullData",
+          "description" : "If you want to get full information for this  specific object",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ true, "extended" ]
+          }
+        } ],
+        "description" : "This endpoint lets you get up to date information of a specific site.",
+        "responses" : {
+          "200" : {
+            "description" : "The request is correct",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Site"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Default error code (Search term is not specified)"
+          },
+          "403" : {
+            "description" : "Current user does not have permission to access the object"
+          },
+          "404" : {
+            "description" : "Not found, object cannot be found or object identifier is not unique"
+          },
+          "409" : {
+            "description" : "Error objId is not valid"
+          },
+          "500" : {
+            "description" : "Unexpected server error"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Site" ],
+        "summary" : "Allows you to edit a Site object",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "name",
+          "description" : "Site name or unique identifier (Name, Id or External Id) ",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "returnUpdatedObject",
+          "description" : "This flag, if the creation is successful, in the response body you will get back the created object.",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "basic"
+          }
+        }, {
+          "in" : "query",
+          "name" : "action",
+          "description" : "it runs the specified workflow action on the object after incorporating values in the request body (Delete, if you want to delete the object and send the request body empty)",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "basic"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "body of the Site",
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Site"
+              }
+            }
+          }
+        },
+        "description" : "Updates a Site record with the data provided in the request  body.",
+        "responses" : {
+          "200" : {
+            "description" : "The request is correct"
+          },
+          "400" : {
+            "description" : "Default error code (Object is not in an updatable state)"
+          },
+          "403" : {
+            "description" : "Current user does not have the necessary permission "
+          }
+        }
+      }
+    },
+    "/Work_Order/{name}" : {
+      "get" : {
+        "tags" : [ "Work Order" ],
+        "summary" : "Allows you to get data of Work Order Object",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "name",
+          "description" : "work Order name or unique identifier (Name, Id or External Id) ",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "searchTerm",
+          "description" : "Search Work Order object based on the introduced searchTerm",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "formData",
+          "description" : "If you want to get all custom form information for this specific object",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ true, "schema", "multi-page-schema" ]
+          }
+        }, {
+          "in" : "query",
+          "name" : "fullData",
+          "description" : "If you want to get full information for this  specific object",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ true, "extended" ]
+          }
+        } ],
+        "description" : "This endpoint lets you get up to date information of a specific work order.",
+        "responses" : {
+          "200" : {
+            "description" : "The request is correct",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Work_Order"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Default error code (Search term is not specified)"
+          },
+          "403" : {
+            "description" : "Current user does not have permission to access the object"
+          },
+          "404" : {
+            "description" : "Not found, object cannot be found or object identifier is not unique"
+          },
+          "409" : {
+            "description" : "Error objId is not valid"
+          },
+          "500" : {
+            "description" : "Unexpected server error"
+          }
+        }
+      }
+    },
+    "/work-order/{name}/client_pdf" : {
+      "get" : {
+        "tags" : [ "Work Order" ],
+        "summary" : "Allows you to get data of Work Order Object",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "name",
+          "description" : "work Order name or unique identifier (Name, Id or External Id) ",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "description" : "This endpoint lets you get the information of the Work Order in PDF format",
+        "responses" : {
+          "200" : {
+            "description" : "The request is correct",
+            "content" : {
+              "application/pdf" : {
+                "schema" : {
+                  "type" : "string",
+                  "format" : "binary"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Default error code (Search term is not specified)"
+          },
+          "403" : {
+            "description" : "Current user does not have permission to access the object"
+          },
+          "404" : {
+            "description" : "Not found, object cannot be found or object identifier is not unique"
+          },
+          "409" : {
+            "description" : "Error objId is not valid"
+          },
+          "500" : {
+            "description" : "Unexpected server error"
+          },
+          "504" : {
+            "description" : "Gateway Timeout"
+          }
+        }
+      }
+    },
+    "/IT_Contact" : {
+      "post" : {
+        "tags" : [ "IT Contact" ],
+        "summary" : "Allows you to create an IT Contact object",
+        "parameters" : [ {
+          "in" : "query",
+          "name" : "returnUpdatedObject",
+          "description" : "This flag, if the creation is successful, in the response body you will get back the created object.",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "basic"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "Send a request body with relevant information to create an IT Contact",
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/IT_Contact"
+              }
+            }
+          }
+        },
+        "description" : "Creates a new IT Contact record with the data provided in the request  body.",
+        "responses" : {
+          "200" : {
+            "description" : "The request is correct"
+          },
+          "400" : {
+            "description" : "Default error code (Invalid object type)"
+          },
+          "403" : {
+            "description" : "Current user does not have the necessary permission "
+          }
+        }
+      }
+    },
+    "/IT_Contact/{name}" : {
+      "get" : {
+        "tags" : [ "IT Contact" ],
+        "summary" : "Allows you to get data of IT Contact Object",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "name",
+          "description" : "IT Contact name or unique identifier (Name, Id or External Id) ",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "searchTerm",
+          "description" : "Search IT Contact object based on the introduced searchTerm",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "doLookup",
+          "description" : "This parameters allows you to check if the introduced field name is part of the object.",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "formData",
+          "description" : "If you want to get all custom form information for this specific object",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ true, "schema", "multi-page-schema" ]
+          }
+        }, {
+          "in" : "query",
+          "name" : "fullData",
+          "description" : "If you want to get full information for this specific object",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ true, "extended" ]
+          }
+        } ],
+        "description" : "This endpoint lets you get up to date information of a specific IT Contact.",
+        "responses" : {
+          "200" : {
+            "description" : "The request is correct",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/IT_Contact"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Default error code (Search term is not specified)"
+          },
+          "403" : {
+            "description" : "Current user does not have permission to access the object"
+          },
+          "404" : {
+            "description" : "Not found, object cannot be found or object identifier is not unique"
+          },
+          "409" : {
+            "description" : "Error objId is not valid"
+          },
+          "500" : {
+            "description" : "Unexpected server error"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "IT Contact" ],
+        "summary" : "Allows you to edit a IT Contact object",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "name",
+          "description" : "IT Contact name or unique identifier (Name, Id or External Id) ",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "returnUpdatedObject",
+          "description" : "This flag, if the creation is successful, in the response body you will get back the created object.",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "basic" ]
+          }
+        }, {
+          "in" : "query",
+          "name" : "action",
+          "description" : "it runs the specified workflow action on the object after incorporating values in the request body (Delete, if you want to delete the object and send the request body empty)",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "body of the Site",
+          "required" : true,
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/IT_Contact"
+              }
+            }
+          }
+        },
+        "description" : "Updates a IT Contact record with the data provided in the request  body.",
+        "responses" : {
+          "200" : {
+            "description" : "The request is correct"
+          },
+          "400" : {
+            "description" : "Default error code (Object is not in an updatable state)"
+          },
+          "403" : {
+            "description" : "Current user does not have the necessary permission "
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "Service_Request" : {
+        "type" : "object",
+        "additionalProperties" : true,
+        "properties" : {
+          "Id" : {
+            "type" : "string",
+            "description" : "Unique identifier (Autogenerated)"
+          },
+          "Name" : {
+            "type" : "string",
+            "description" : "Unique user-friendly identifier (Autogenerated)"
+          },
+          "Task_Type_Record" : {
+            "type" : "string",
+            "description" : "Specifies the Task Type of the service request its value is a unique identifier."
+          },
+          "Site" : {
+            "type" : "string",
+            "description" : "The location where the service request is needed"
+          },
+          "Account" : {
+            "type" : "string",
+            "description" : "Requester account identifier"
+          },
+          "Summary" : {
+            "type" : "string",
+            "description" : "Brief description of what the service request is about"
+          },
+          "State" : {
+            "type" : "string",
+            "description" : "Indicates whether the service request is New, Active or has been Canceled."
+          },
+          "Status" : {
+            "type" : "string",
+            "description" : "Specifies the current condition of the service request."
+          },
+          "Request_Start" : {
+            "type" : "string",
+            "format" : "date-time",
+            "description" : "When the Service request is needed"
+          },
+          "External_Id" : {
+            "type" : "string",
+            "description" : "Client identifier for the service request record."
+          }
+        },
+        "required" : [ "Task_Type_Record", "Summary", "Site" ]
+      },
+      "Site" : {
+        "type" : "object",
+        "additionalProperties" : true,
+        "properties" : {
+          "Id" : {
+            "type" : "string",
+            "description" : "Unique identifier (Autogenerated)"
+          },
+          "Name" : {
+            "type" : "string",
+            "description" : "Descriptive name for the Site"
+          },
+          "Country" : {
+            "type" : "string",
+            "description" : "Country where is located the site."
+          },
+          "State_Province" : {
+            "type" : "string",
+            "description" : "State or province where is located the site."
+          },
+          "City" : {
+            "type" : "string",
+            "description" : "City o town where the site is located."
+          },
+          "Street" : {
+            "type" : "string",
+            "description" : "Specific street where the site is located."
+          },
+          "Short_Description" : {
+            "type" : "string",
+            "description" : "Brief description of the site and how you get to it."
+          },
+          "Phone" : {
+            "type" : "string",
+            "description" : "Phone specific for the site (reference)"
+          },
+          "Account_Site_ID" : {
+            "type" : "string",
+            "description" : "Unique identifier for the site from clients part."
+          }
+        },
+        "required" : [ "Name" ]
+      },
+      "Work_Order" : {
+        "type" : "object",
+        "additionalProperties" : true,
+        "properties" : {
+          "Id" : {
+            "type" : "string",
+            "description" : "Unique identifier (Autogenerated)"
+          },
+          "Name" : {
+            "type" : "string",
+            "description" : "Unique user-friendly identifier (Autogenerated)"
+          },
+          "Invoice" : {
+            "type" : "string",
+            "description" : "Invoice identifier for this particular work order"
+          },
+          "Service_Request" : {
+            "type" : "string",
+            "description" : "Service request identifier that is the parent of this work order"
+          },
+          "Site" : {
+            "type" : "string",
+            "description" : "Site identifier where  this work order is needed (usually is the same as the service request)"
+          },
+          "Status" : {
+            "type" : "string",
+            "description" : "Specifies the current condition of the work order"
+          },
+          "Summary" : {
+            "type" : "string",
+            "description" : "Brief description of what this work order is about"
+          },
+          "Account" : {
+            "type" : "string",
+            "description" : "Vendor identifier that is the responsable to make this work order"
+          },
+          "Job_Completition_Form" : {
+            "type" : "string",
+            "description" : "Job completition form identifier that fulfilled proves the completition of a work order."
+          }
+        }
+      },
+      "IT_Contact" : {
+        "type" : "object",
+        "properties" : {
+          "Id" : {
+            "type" : "string",
+            "description" : "Unique identifier (Autogenerated)"
+          },
+          "Name" : {
+            "type" : "string",
+            "description" : "Contact full name"
+          },
+          "Is_Active" : {
+            "type" : "boolean",
+            "description" : "Indicates if the contact is able to perfom actions"
+          },
+          "User" : {
+            "type" : "string",
+            "description" : "Unique identifier of Salesforce users."
+          },
+          "Email" : {
+            "type" : "string",
+            "format" : "email",
+            "description" : "Email of the user should be unique."
+          },
+          "IT_Asset" : {
+            "type" : "string",
+            "description" : "Correlative identifier"
+          }
+        },
+        "required" : [ "Name" ]
+      }
+    },
+    "securitySchemes" : {
+      "password" : {
+        "type" : "oauth2",
+        "flows" : {
+          "password" : {
+            "tokenUrl" : "https://qe4-analyst.sitehands.com/oauth/token"
+          }
+        }
+      }
+    }
+  }
+}
